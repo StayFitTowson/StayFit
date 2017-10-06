@@ -1,0 +1,107 @@
+﻿<style>
+
+.ms-quickLaunch {padding-top:0px}
+#s4-leftpanel-content{
+background-color:#bcd9ed!important;
+}
+.s4-ql ul.root > li > .menu-item {
+font-size: 12px !important;
+font-weight: bold;
+	border-bottom:1px solid #b6b6b6 !important;
+	background-color:#E4E1BD;
+}
+#s4-leftpanel-content {
+border:0px!important;
+background-color:#bcd9ed!important;
+}
+.s4-ql {
+background-color:#fff;
+margin-bottom:0px!important;
+}
+/* Inner nav element */
+.menu-vertical {
+padding:0px!important;
+}
+/* top rounded */
+#QLtopwrapper {
+background:url('/testing/seni/Style%20Library/QLtop.png') repeat-x;
+height:19px;
+width:220px;
+}
+/* bottom rounded */
+#QLbottomwrapper {
+background:url('http:/testing/seni/Style%20Library/QLbottom.png') repeat-x;
+height:19px;
+width:220px;
+}
+.menu-vertical > ul.root > li.static > .menu-item{
+border-bottom:1px #929292 solid!important;
+padding-left:0px;
+color:#fff;
+font-family:Arial;
+font-size:11px;
+font-weight:bold;
+background-color:#bcd9ed!important;
+background-color:#bcd9ed!important;
+}
+/* Selected */
+.s4-ql a.selected {
+background-color:transparent;
+background-image:none;
+border:1px transparent solid!important;
+color:#fff!important;
+}
+/* no border in teamsites */
+.s4-ql,.s4-specialNavLinkList{
+border:0px!important;
+}
+.menu-vertical > ul.root > li.static {
+padding:0px!important; margin:0px!important;
+}
+/* headers */
+.menu-vertical > ul.root > li.static > a.menu-item {
+padding:10px 4px 10px 5px;
+border-bottom:1px #ccc solid;
+}
+/* headers selected for publishing sites */
+.menu-vertical > ul.root > li.static > a.selected {
+padding:10px 4px 10px 3px;!important;
+padding-left:4px!important;
+background-color:#777!important;
+}
+/* Subitem container */
+.menu-vertical > ul.root > li.static > ul {
+margin-bottom:0px;
+padding-top:0px;
+padding-bottom:0px;
+}
+/* SubItems wrap */
+.menu-vertical > ul.root > li.static > ul.static > li.static > a  {
+font-family:Arial, Helvetica, sans-serif;
+font-size:11px;
+padding:10px 4px 10px 8px;
+color:#ccc!important;
+}
+/* SubItems  */
+.menu-vertical > ul.root > li.static > ul.static > li.static > a > span > span {
+color:#333;
+text-decoration:none!important;
+}
+/* SubItems hover */
+.menu-vertical > ul.root > li.static > ul.static > li.static a:hover {
+text-decoration:none!important;
+}
+/* Selected SubItems  */
+.menu-vertical > ul.root > li.static > ul.static > li.selected > a.selected {
+background-color:#fff;
+border:1px transparent solid!important;
+padding-left:10px!important;
+}
+/* Selected SubItems  */
+.menu-vertical > ul.root > li.static > ul.static > li.selected > a.selected > span > span {
+color:#000;
+}
+.menu-vertical > ul.root > li.static > ul.static > li {
+border-bottom:1px #bcd9ed solid!important;
+
+</style>

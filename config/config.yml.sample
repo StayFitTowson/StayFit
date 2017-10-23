@@ -1,0 +1,36 @@
+# encoding: utf-8
+development:
+  # Your secret key for verifying the integrity of signed cookies.
+  # If you change this key, all old signed cookies will become invalid!
+  # Make sure the secret is at least 30 characters and all random,
+  # no regular words or you'll be exposed to dictionary attacks.
+  # Used in config/initializers/secret_token.rb.
+  # You can generate a good value for this by running `rake secret`.
+  SECRET_TOKEN:
+
+  # Twitter API stuff (these fake keys work)
+  CONSUMER_KEY: asdf
+  CONSUMER_SECRET: asdf
+
+  # ElasticSearch configuration.
+  # If empty, a default regex search will be used.
+  ELASTICSEARCH_INDEX_URL:
+
+  #set this to the URL of a status blog or the like.
+  #if empty, the Blog footer link won't show.
+  BLOG_URL:
+
+  # See https://github.com/benprew/pony for via_options.
+  PONY_VIA_OPTIONS:
+    address: smtp.yourserver.com
+    port: 25
+    user_name: user
+    password: password
+    authentication: :plain
+    domain: localhost.localdomain
+
+test:
+  CONSUMER_KEY: asdf
+  CONSUMER_SECRET: asdf
+  ELASTICSEARCH_INDEX_URL:
+  BLOG_URL:

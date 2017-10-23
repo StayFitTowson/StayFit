@@ -1,0 +1,27 @@
+#users
+  %ul.user-list{:class => list_class}
+    - authors.each_with_index do |author, i|
+      - next if author.nil?
+      %li.user{:class => i%2 == 0 ? "even" : "odd"}
+        = AuthorDecorator.decorate(author).avatar
+
+        .info
+          %a{:href => author.url, :rel => 'user messages'}
+            %b
+              %span.user-name
+                = author.display_name
+
+            (<span class="user-text">#{author.username}</span>)
+          .bio
+            %span.description
+              = author.bio
+
+        - if current_user && current_user.feed != author.feed && author.feed
+          - following = current_user.following_author?(author)
+          .follow{:class => (following ? "negative" : "positive")}
+            - if following
+              = form_tag "/subscriptions/#{author.feed.id}" do
+                %input{:type => "hidden", :name => "_method", :value => "delete"}
+                = submit_tag "Unfollow", :class => "button unfollow", :id => "unfollow-#{author.feed.id}", :confirm => t(:unfollow, :scope => :confirms)
+            - else
+              = render :partial => "follow_user", :locals => { :feed_id => author.feed.id }

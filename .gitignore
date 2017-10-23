@@ -1,0 +1,17 @@
+*.swp
+docs/*
+!docs/index.html
+!docs/app_index.html
+!docs/test_index.html
+config.yml
+.sass-cache
+tmp
+tags
+.rvmrc
+public/assets
+test/coverage
+log/*.log*
+capybara*
+.DS_Store
+.bundle
+vendor/bundle

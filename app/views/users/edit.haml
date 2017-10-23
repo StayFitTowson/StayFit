@@ -1,0 +1,74 @@
+- @profile_sidebar = false
+
+- content_for :sidebar do
+  = render :partial => "shared/sidebar/gravatar", :locals => {:user => @user}
+
+#profile
+  %h3= "Edit Profile for @#{current_user.username}"
+
+  = form_for current_user, :html => {:name => "profile_update_form", :id => "profile-update"} do |f|
+    .form-section
+      = render :partial => "shared/field", :locals => {:obj => @user.author, :attr => :username, :params => params}
+      = render :partial => "shared/field", :locals => {:obj => @user.author, :attr => :name, :params => params}
+
+    .form-section
+      = render :partial => "shared/field", :locals => {:attr => :password, :as => :password}
+      = render :partial => "shared/field", :locals => {:attr => :password_confirm, :lbl => "Confirm Password", :as => :password}
+
+    .form-section
+      = render :partial => "shared/field", :locals => {:obj => @user.author, :attr => :email, :params => params}
+      = render :partial => "shared/field", :locals => {:obj => @user.author, :attr => :website, :params => params}
+      = render :partial => "shared/field", :locals => {:obj => @user.author, :attr => :bio, :as => :text, :params => params}
+
+    - if @user.twitter?
+      .form-section.preferences
+        .section-label
+          Preferences
+        .input
+          = f.check_box("always_send_to_twitter")
+          %label{:for => "user_always_send_to_twitter"}
+            Always post updates to Twitter?
+
+    .form-submit
+      %input.button{:type => "submit", :value => "Save"}
+- content_for :bottom do
+  .avatar.bottom-block
+    %h4 Avatar
+    .avatar-management
+      - if @user.author.image_url.present?
+        = image_tag(@user.author.avatar_url, :class => "photo user-image", :alt => "avatar")
+        %span.description
+          Saved from a linked account
+        = form_tag(avatar_path(@user.author), :method => "delete", :name => "avatar_delete_form", :id => "avatar-delete") do
+          %input.button.destructive_action{:type => "submit", :value => "Remove Avatar"}
+      - elsif @user.author.email.present?
+        = image_tag(@user.author.avatar_url, :class => "photo user-image", :alt => "avatar")
+        %span.description
+          = "Gravatar using #{@user.author.email}"
+        = link_to "Go to Gravatar to change", Author::GRAVATAR_SIGNUP, :class => "button"
+      - else
+        = image_tag(asset_path(RstatUs::DEFAULT_AVATAR), :class => "photo user-image", :alt => "avatar")
+        %span.description
+          = "Add an email to your profile above in order to use "
+          = link_to("Gravatar", Author::GRAVATAR_SIGNUP)
+          = " to set a custom avatar!"
+
+  .linked-accounts.bottom-block
+    %h4 Linked Accounts
+    .linked
+      - if @user.twitter?
+        %img.linked-image{:src => asset_path("twitter_newbird_blue.png"), :alt => "Twitter Account"}
+        .linked-name="@#{@user.twitter.nickname}"
+
+        = form_tag "/users/#{@user.username}/auth/twitter", :method => "delete", :class => "profile-update", :name => "profile_update_form" do
+          %input.button.destructive_action{:type => "submit", :value => "Remove"}
+
+      - else
+        %form.profile-update{:action => "/auth/twitter", :method => "GET", :name => "profile_update_form"}
+          %input.button{:type => "submit", :value => "Add Twitter Account"}
+
+  .delete-account.bottom-block
+    %h4 Delete Account
+
+    .to_delete
+      = link_to "Delete Account", account_deletion_confirmation_path, :class => "button destructive_action"

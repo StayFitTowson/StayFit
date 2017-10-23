@@ -1,0 +1,26 @@
+- if current_user
+  - current_author = AuthorDecorator.decorate(current_user.author)
+  #current_user_block.vcard.block
+    = current_author.avatar
+    .user-info
+      %h4.name
+        = current_author.display_name
+      .nickname
+        %a.url{:href=>"/users/#{current_user.username}"}
+          @#{current_user.username}
+      %ul.stats
+        %li.update-count
+          %a{ :href => "/users/#{current_user.username}", :rel => 'messages-me' }
+            .icon
+            %span.number= current_user.feed.updates.count
+            Updates
+        %li.following-count
+          %a{ :href => "/users/#{current_user.username}/following", :rel => 'users-friends' }
+            .icon
+            %span.number= current_user.following.length
+            Following
+        %li.follower-count.last
+          %a{ :href => "/users/#{current_user.username}/followers", :rel => 'users-followers' }
+            .icon
+            %span.number= current_user.followers.length
+            Followers

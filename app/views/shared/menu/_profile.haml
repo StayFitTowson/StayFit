@@ -1,0 +1,5 @@
+- if current_user
+  %ul.menu#profile_menu
+    != menu_item("Profile", "/users/#{current_user.username}")
+    %li.log_out
+      = link_to "Log Out", logout_path, :method => :post

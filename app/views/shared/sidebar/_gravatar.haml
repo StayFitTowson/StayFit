@@ -1,0 +1,14 @@
+.gravatar.block
+  %h5.title
+    Profile Picture
+    - if user.email.present?
+      %p
+        Create a
+        = link_to 'Gravatar', Author::GRAVATAR_SIGNUP
+        account to set and update your avatar.
+    - else
+      %p
+        = link_to 'Add an email address', edit_user_path(user)
+        to your account and create a
+        = link_to 'Gravatar', Author::GRAVATAR_SIGNUP
+        account to set and update your avatar.

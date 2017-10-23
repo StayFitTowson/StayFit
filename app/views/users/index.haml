@@ -1,0 +1,17 @@
+- title("Users")
+- content_for :title do
+  = "Users"
+
+- content_for :top do
+  #users-search.search
+    %form.users-search{:method => :get, :action => "/users"}
+      %input{:name => "search", :type => "text", :value => params[:search]}
+      %input{:type => "submit", :value => "Search", :class => "button"}
+
+- if @authors.empty?
+  .empty
+    Sorry, no users that match.
+- else
+  = render :partial => "users/list", :locals => {:authors => @authors, :list_class => "search"}
+
+= render :partial => "shared/pagination"

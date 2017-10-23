@@ -1,0 +1,66 @@
+- @profile_sidebar = false
+- title "@#{@author.username}'s Profile"
+
+- content_for :sidebar do
+  - if @author.user == current_user
+    = render :partial => "shared/sidebar/gravatar", :locals => {:user => @author.user}
+
+- content_for :top do
+  #profile.vcard
+    #users
+      %ul.single
+        %li.user
+
+          %h3.fn
+            %span.user-name= @author.display_name
+          .nickname  @<span class="user-text">#{@author.username}</span>
+
+          .follow-wrap
+            - unless current_user and @author.user == current_user
+              #follow
+                - if current_user and current_user.following_author? @author
+                  .negative
+                    = form_tag "/subscriptions/#{@author.feed.id}" do
+                      %input{:type => "hidden", :name => "_method", :value => "delete"}
+                        %input.button.unfollow{:type => "submit", :value => "Unfollow", :id => "unfollow-#{@author.feed.id}"}
+                - elsif current_user
+                  = render :partial => "follow_user", :locals => { :feed_id => @author.feed.id }
+
+            - if @author.user == current_user
+              .edit
+                %a{:href => edit_user_path(@author.username)} Edit
+              .export
+                %a= link_to "Export all updates", export_path
+
+          - unless @author.website.blank? or @author.bio.blank?
+            .info
+              - unless @author.website.blank?
+                .website
+                  = @author.website_link
+
+              %p.note
+                %span.description= @author.bio
+
+          %ul.stats
+            %li.update-count
+              %a{ :href => "#profile_updates", :rel => 'messages-me' }
+                %span.icon
+                %span.number= @author.feed.updates.count
+                Updates
+            %li.following-count
+              %a{ :href => "/users/#{@author.username}/following", :rel => 'users-friends' }
+                %span.icon
+                %span.number= @author.user.following.length
+                Following
+            %li.follower-count
+              %a{ :href => "/users/#{@author.username}/followers", :rel => 'users-followers'}
+                %span.icon
+                %span.number= @author.user.followers.length
+                Followers
+            %li.rss
+              %a{ :href => user_feed_path(@author.username)}
+                %span.icon
+                Atom feed
+
+
+= render :partial => "updates/list", :locals => {:updates => @updates, :id => "profile_updates", :no_highlight => true, :list_class => "messages-user"}

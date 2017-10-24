@@ -5,7 +5,7 @@ ruby '2.2.8'
 
 gem 'rails', '4.1.4'
 gem 'rails_config'
-gem install json -v '1.8.1'
+bundle update json
 
 # Rails 4.1 upgrade to remove
 gem 'active_model_serializers'

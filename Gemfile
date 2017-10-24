@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-ruby ENV['TRAVIS_RUBY_VERSION'] || '2.1.3'
+ruby ENV['TRAVIS_RUBY_VERSION'] || '2.3.3'
 
 gem 'rails',                    '3.2.20'
 

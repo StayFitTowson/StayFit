@@ -1,9 +1,0 @@
-{
-    "languages"
-:
-    {
-        "JavaScript"
-    :
-        141
-    }
-}

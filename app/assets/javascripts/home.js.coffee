@@ -1,2 +1,0 @@
-jQuery $ ->
-  $("#pitch").equalHeights()

@@ -1,28 +1,43 @@
 module ApplicationHelper
-  def nav_link text, link, icon={}
-    icon = {
-      size: "1x"
-    }.merge(icon)
-
-    content = link_to icon[:type].present? ? fa_icon(icon[:type].to_s, text: text, class: icon[:size].to_s) : text, link
-
-    if current_page? link
-      content_tag :li, class: "active" do
-        content
-      end
+  def viewing_own_profile_while_logged_in?
+    if @user && current_user
+      @user.id == current_user.id
     else
-      content_tag(:li) do
-        content
-      end
+      false
     end
   end
 
-  def flash_class(level)
-    case level
-    when "notice" then "message-info"
-    when "success" then "message-success"
-    when "error" then "message-danger"
-    when "alert" then "message-danger"
+  def viewing_own_achievement?
+    if current_user && @achievement
+      current_user.id == @achievement.user.id
+    else
+      false
     end
+  end
+
+  def print_time(datetime)
+    ordinal_suffix = datetime.localtime.day.ordinal
+    datetime.localtime.strftime("%B %-d<sup>#{ordinal_suffix}</sup>, %Y").html_safe
+  end
+
+  def print_time_index_style(datetime)
+    datetime.localtime.strftime("%-m/ %d/ %y")
+  end
+
+  def link_status(link)
+    request.path_info =~ /#{link}/ ? "active" : ""
+  end
+
+  def on_recent_activity?
+    !!(request.path_info =~ /\/recent-activity/)
+  end
+
+  def profile_pic_url(user)
+    profile_pic_file = Dir.glob(File.join("public","images","users","#{user.id}","*profilepic*")).first.match(/(?<=\/)\d+_profilepic.+/)[0]
+    url("images/users/#{user.id}/#{profile_pic_file}")
+  end
+
+  def referred_by_recent_activity?
+    !!(/\/recent-activity\Z/.match(request.referrer))
   end
 end

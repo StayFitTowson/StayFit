@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -9,101 +8,94 @@
 # from scratch. The latter is a flawed and unsustainable approach (the more migrations
 # you'll amass, the slower it'll run and the greater likelihood for issues).
 #
-# It's strongly recommended to check this file into your version control system.
+# It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130728222738) do
+ActiveRecord::Schema.define(version: 20171104140718) do
 
-  create_table "fitbit_accounts", :force => true do |t|
-    t.string   "uid"
-    t.string   "oauth_token"
-    t.string   "oauth_token_secret"
-    t.integer  "user_id"
-    t.datetime "created_at",         :null => false
-    t.datetime "updated_at",         :null => false
+  create_table "achievements", force: :cascade do |t|
+    t.string "activity_type"
+    t.integer "activity_id"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "completed_on"
+    t.integer "daily_total_id"
+    t.index ["activity_type", "activity_id"], name: "index_achievements_on_activity_type_and_activity_id"
+    t.index ["user_id"], name: "index_achievements_on_user_id"
   end
 
-  add_index "fitbit_accounts", ["user_id"], :name => "index_fitbit_accounts_on_user_id"
-
-  create_table "locations", :force => true do |t|
-    t.integer  "user_id"
-    t.datetime "recorded_at"
-    t.decimal  "lat"
-    t.decimal  "lng"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+  create_table "blocks", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "blocked_user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["blocked_user_id"], name: "index_blocks_on_blocked_user_id"
+    t.index ["user_id"], name: "index_blocks_on_user_id"
   end
 
-  create_table "measurements", :force => true do |t|
-    t.float    "value"
-    t.string   "type"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
-    t.integer  "user_id"
-    t.datetime "recorded_at"
+  create_table "daily_totals", force: :cascade do |t|
+    t.integer "total_calories_in", default: 0, null: false
+    t.integer "total_calories_out", default: 0, null: false
+    t.integer "net_calories", default: 0, null: false
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "completed_on"
+    t.index ["user_id"], name: "index_daily_totals_on_user_id"
   end
 
-  add_index "measurements", ["user_id"], :name => "index_measurements_on_user_id"
-
-  create_table "spatial_ref_sys", :id => false, :force => true do |t|
-    t.integer "srid",                      :null => false
-    t.string  "auth_name", :limit => 256
-    t.integer "auth_srid"
-    t.string  "srtext",    :limit => 2048
-    t.string  "proj4text", :limit => 2048
+  create_table "exercises", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "calories_burned", null: false
+    t.string "comment", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table "users", :force => true do |t|
-    t.datetime "created_at",                             :null => false
-    t.datetime "updated_at",                             :null => false
-    t.string   "email",                  :default => "", :null => false
-    t.string   "encrypted_password",     :default => "", :null => false
-    t.string   "reset_password_token"
-    t.datetime "reset_password_sent_at"
+  create_table "foods", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "calories", null: false
+    t.string "comment", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "mutes", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "muted_user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["muted_user_id"], name: "index_mutes_on_muted_user_id"
+    t.index ["user_id"], name: "index_mutes_on_user_id"
+  end
+
+  create_table "relationships", force: :cascade do |t|
+    t.integer "follower_id"
+    t.integer "followee_id"
+    t.boolean "following_each_other", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["followee_id"], name: "index_relationships_on_followee_id"
+    t.index ["follower_id"], name: "index_relationships_on_follower_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "quote", default: "", null: false
+    t.string "slug"
+    t.integer "daily_calorie_intake_goal", null: false
     t.datetime "remember_created_at"
-    t.string   "confirmation_token"
-    t.datetime "confirmed_at"
-    t.datetime "confirmation_sent_at"
-    t.string   "unconfirmed_email"
-    t.integer  "failed_attempts",        :default => 0
-    t.string   "unlock_token"
-    t.datetime "locked_at"
-    t.string   "name"
-    t.float    "height"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["slug"], name: "index_users_on_slug", unique: true
   end
-
-  add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
-  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
-  add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
-  add_index "users", ["unlock_token"], :name => "index_users_on_unlock_token", :unique => true
-
-  create_table "weights", :force => true do |t|
-    t.string   "type"
-    t.integer  "user_id"
-    t.float    "bmi"
-    t.float    "value"
-    t.float    "lean_mass_value"
-    t.float    "fat_mass_value"
-    t.float    "fat_percentage"
-    t.datetime "recorded_at"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
-    t.hstore   "meta"
-    t.string   "source"
-  end
-
-  add_index "weights", ["meta"], :name => "index_weights_on_meta"
-  add_index "weights", ["user_id"], :name => "index_weights_on_user_id"
-
-  create_table "withings_accounts", :force => true do |t|
-    t.string   "userid"
-    t.datetime "created_at",         :null => false
-    t.datetime "updated_at",         :null => false
-    t.string   "oauth_token"
-    t.integer  "user_id"
-    t.string   "oauth_token_secret"
-    t.datetime "synced_at"
-  end
-
-  add_index "withings_accounts", ["user_id"], :name => "index_withings_accounts_on_user_id"
 
 end

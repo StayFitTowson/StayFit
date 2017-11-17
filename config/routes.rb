@@ -1,32 +1,26 @@
 Rails.application.routes.draw do
-  root 'activity_feed#show'
-  get '/activity-feed' => 'activity_feed#show'
-  devise_for :users, controllers: {registrations: 'users/registrations'}, skip: [:passwords]
-  
-  resources :users, param: :slug, only: [:index, :show], module: "users", controller: "user_actions" do
+  get 'password_resets/new'
+
+  get 'password_resets/edit'
+
+  root                 'static_pages#home'
+  get     'help'    => 'static_pages#help'
+  get     'about'   => 'static_pages#about'
+  get     'contact' => 'static_pages#contact'
+  get     'signup'  => 'users#new'
+  get     'login'   => 'sessions#new'
+  post    'login'   => 'sessions#create'
+  delete  'logout'  => 'sessions#destroy'
+
+
+  # Sets up users/1/following and user/1/followers
+  resources :users do
     member do
-      post 'follow'
-      delete 'unfollow'
-      post 'block'
-      delete 'unblock'
-      post 'mute'
-      delete 'unmute'
-      get 'blocked'
-      get 'muted'
-      get 'followers'
-      get 'following'
+      get :following, :followers
     end
   end
-
-  scope 'users/:slug', as: 'user' do
-    resources :achievements, only: [:index]
-    resources :foods, only: [:index]
-    resources :exercises, only: [:index]
-  end
-
-  resources :achievements, only: [:new, :create]
-  resources :foods, except: [:index, :new, :create]
-  resources :exercises, except: [:index, :new, :create]
-
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  resources :account_activations, only: [:edit]
+  resources :password_resets,     only: [:new, :create, :edit, :update]
+  resources :microposts,          only: [:create, :destroy]
+  resources :relationships,       only: [:create, :destroy]
 end

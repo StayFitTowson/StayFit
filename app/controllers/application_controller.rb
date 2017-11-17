@@ -1,20 +1,18 @@
 class ApplicationController < ActionController::Base
-  include Pundit
+  # Prevent CSRF attacks by raising an exception.
+  # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
-  before_action :authenticate_user!
-  after_action :verify_authorized
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-  
-  protected
+  include SessionsHelper
 
-  def user_not_authorized(exception)
-    policy_name = exception.policy.class.to_s.underscore
-    flash[:error] = t "#{policy_name}.#{exception.query}", scope: :pundit, default: :default_msg
-    redirect_to(request.referrer || root_path)
-  end
+  private
 
-  def referred_by_activity_feed?
-    !!request.referrer =~ /activity-feed/
+  # Confirms a logged-in user.
+  def logged_in_user
+    unless logged_in?
+      store_location
+      flash[:danger] = "Please log in."
+      redirect_to login_url
+    end
   end
 
 end

@@ -1,175 +1,126 @@
-require 'cgi'
+class User < ActiveRecord::Base
+  attr_accessor :remember_token, :activation_token, :reset_token
 
-class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable, :rememberable, :trackable, :validatable, :omniauthable
+  has_many :microposts, dependent: :destroy
+  has_many :active_relationships, class_name:  "Relationship",
+                                foreign_key: "follower_id",
+                                dependent:   :destroy
 
-  has_many :following_relationships, class_name: "Relationship", foreign_key: "follower_id", dependent: :destroy
-  has_many :following, through: :following_relationships, source: :followee
-  has_many :follower_relationships, class_name: "Relationship", foreign_key: "followee_id", dependent: :destroy
-  has_many :followers, through: :follower_relationships, source: :follower
-  has_many :blocked_relationships, class_name: "Block", dependent: :destroy
-  has_many :blocked_users, through: :blocked_relationships
-  has_many :muted_relationships, class_name: "Mute", dependent: :destroy
-  has_many :muted_users, through: :muted_relationships
-  has_many :achievements, dependent: :destroy
-  has_many :exercises, through: :achievements, source: :activity, source_type: "Exercise"
-  has_many :foods, through: :achievements, source: :activity, source_type: "Food"
-  has_many :daily_totals, dependent: :destroy
+  has_many :passive_relationships, class_name:  "Relationship",
+                                   foreign_key: "followed_id",
+                                   dependent:   :destroy
 
-  validates_presence_of :name, :daily_calorie_intake_goal, :email
-  validates :email, uniqueness: true
-  validates :daily_calorie_intake_goal, numericality: {greater_than_or_equal_to: 1}
-  
-  after_create :update_slug_column
-  before_save :set_slug, on: :update, unless: :slug_set_properly? 
+  has_many :following, through: :active_relationships, source: :followed
+  has_many :followers, through: :passive_relationships, source: :follower
 
-  def first_name
-    self.name.split(" ")[0]
+  # Callback to downcase the email attribute before saving the user
+  before_save   :downcase_email
+  before_create :create_activation_digest
+
+  validates :name, presence: true, length: { maximum: 50}
+  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+  validates :email, presence: true, length: { maximum: 255},
+                    format: {with: VALID_EMAIL_REGEX},
+                    uniqueness: { case_sensitive: false }
+
+has_secure_password
+validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
+
+
+
+  # Returns the hash digest of the given string.
+  def User.digest(string)
+    cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
+                                                  BCrypt::Engine.cost
+    BCrypt::Password.create(string, cost: cost)
   end
 
-  def recent_exercises
-    self.exercises.order(created_at: :desc).limit(6)
+  #Returns a random token
+  def User.new_token
+    SecureRandom.urlsafe_base64
   end
 
-  def recent_meals
-    self.foods.order(created_at: :desc).limit(6)
+  #Remembers a user in the database for use in persistent sessions
+  def remember
+    self.remember_token = User.new_token
+    update_attribute(:remember_digest, User.digest(remember_token))
   end
 
-  def achievements_ordered_by(order = nil)
-    dates_array = (order.try(:downcase) == "ascending" ? self.daily_totals.order(completed_on: :asc).pluck(:completed_on) : self.daily_totals.order(completed_on: :desc).pluck(:completed_on))
-    
-    [].tap do |array|
-      dates_array.each do |date|
-        array << self.achievements.where(completed_on: date)
-      end
-    end
+  # Returns true if the given token matches the digest.
+  def authenticated?(attribute, token)
+    digest = send("#{attribute}_digest")
+    return false if digest.nil?
+    BCrypt::Password.new(digest).is_password?(token)
   end
 
-  def exercises_ordered_by(filter = nil, order = nil)
-    achievements_table = Achievement.arel_table
-    case filter.try(:downcase)
-    when "name"
-      order.try(:downcase) == "ascending" ? self.exercises.order(name: :asc) : self.exercises.order(name: :desc)
-    when "calories burned"
-      order.try(:downcase) == "ascending" ? self.exercises.order(calories_burned: :asc) : self.exercises.order(calories_burned: :desc)
-    else
-      dates_array = (order.try(:downcase) == "ascending" ? self.daily_totals.order(completed_on: :asc).pluck(:completed_on) : self.daily_totals.order(completed_on: :desc).pluck(:completed_on))
-      
-      [].tap do |array|
-        dates_array.each do |date|
-          array << self.exercises.where(achievements_table[:completed_on].eq(date))
-        end
-      end
-    end
+  def forget
+    update_attribute(:remember_digest, nil)
   end
 
-  def foods_ordered_by(filter = nil, order = nil)
-    achievements_table = Achievement.arel_table
-    case filter.try(:downcase)
-    when "name"
-      order.try(:downcase) == "ascending" ? self.foods.order(name: :asc) : self.foods.order(name: :desc)
-    when "calories"
-      order.try(:downcase) == "ascending" ? self.foods.order(calories: :asc) : self.foods.order(calories: :desc)
-    else
-      dates_array = (order.try(:downcase) == "ascending" ? self.daily_totals.order(completed_on: :asc).pluck(:completed_on) : self.daily_totals.order(completed_on: :desc).pluck(:completed_on))
-      
-      [].tap do |array|
-        dates_array.each do |date|
-          array << self.foods.where(achievements_table[:completed_on].eq(date))
-        end
-      end
-    end
+  # Activates an account.
+  def activate
+    update_attribute(:activated,    true)
+    update_attribute(:activated_at, Time.zone.now)
   end
 
-  def achievement_following_timeline
-    timeline_user_ids = [self.id, self.following.distinct.pluck(:id)].flatten
-    Achievement.where(user_id: timeline_user_ids).order(updated_at: :desc)
+  # Sends activation email.
+  def send_activation_email
+    UserMailer.account_activation(self).deliver_now
   end
 
-  def blocked?(user)
-    !!self.blocked_users.find_by(id: user.id)
+  # Sets the password reset attributes.
+  def create_reset_digest
+    self.reset_token = User.new_token
+    update_attribute(:reset_digest,  User.digest(reset_token))
+    update_attribute(:reset_sent_at, Time.zone.now)
   end
 
-  def blocked_by?(user)
-    user.blocked?(self)
+  # Sends password reset email.
+  def send_password_reset_email
+    UserMailer.password_reset(self).deliver_now
   end
 
-  def block(user)
-    self.unfollow(user) if self.following?(user)
-    find_follower_relationship_with(user).destroy if self.follower?(user)
-    self.blocked_relationships.build(blocked_user: user)
-    self.save
+  # Returns true if a password reset has expired.
+  def password_reset_expired?
+    reset_sent_at < 2.hours.ago
   end
 
-  def unblock(user)
-    find_blocked_relationship_with(user).destroy
+  # Defines a proto-feed.
+  # See "Following users" for the full implementation.
+  def feed
+    following_ids = "SELECT followed_id FROM relationships
+                     WHERE  follower_id = :user_id"
+    Micropost.where("user_id IN (#{following_ids})
+                     OR user_id = :user_id", user_id: id)
   end
 
-  def muted?(user)
-    !!find_muted_relationship_with(user)
+  # Follows a user.
+  def follow(other_user)
+    active_relationships.create(followed_id: other_user.id)
   end
 
-  def mute(user)
-    self.muted_relationships.build(muted_user: user)
-    self.save
+  # Unfollows a user.
+  def unfollow(other_user)
+    active_relationships.find_by(followed_id: other_user.id).destroy
   end
 
-  def unmute(user)
-    find_muted_relationship_with(user).destroy
-    self.save
+  # Returns true if the current user is following the other user.
+  def following?(other_user)
+    following.include?(other_user)
   end
 
-  def following?(user)
-    !!find_following_relationship_with(user)
-  end
-
-  def follower?(user)
-    !!find_follower_relationship_with(user)
-  end
-
-  def follow(user)
-    self.following_relationships.build(followee: user)
-    self.save
-  end
-
-  def unfollow(user)
-    find_following_relationship_with(user).destroy
-  end
 
   private
 
-  def slug_set_properly?
-    self.id != nil && self.slug == get_proper_slug
+  # Converts email to all lower-case.
+  def downcase_email
+    self.email = email.downcase
   end
 
-  def get_proper_slug
-    "#{self.id}-#{CGI.escape(self.name.downcase).gsub("+","-")}"
-  end
-
-  def update_slug_column
-    self.update_column(:slug, get_proper_slug)
-  end
-
-  def set_slug
-    self.slug = get_proper_slug
-  end
-
-  def find_follower_relationship_with(user)
-    self.follower_relationships.find_by(follower: user)
-  end
-
-  def find_following_relationship_with(user)
-    self.following_relationships.find_by(followee: user)
-  end
-
-  def find_blocked_relationship_with(user)
-    self.blocked_relationships.find_by(blocked_user: user)
-  end
-
-  def find_muted_relationship_with(user)
-    self.muted_relationships.find_by(muted_user: user)
+  # Creates and assigns the activation token and digest.
+  def create_activation_digest
+    self.activation_token  = User.new_token
+    self.activation_digest = User.digest(activation_token)
   end
 
 end

@@ -1,0 +1,11 @@
+rake db:migrate
+rake db:seed
+
+admin user:
+User.create!(name:  "Ben",
+             email: "ben@gmail.com",
+             password:              "basketball",
+             password_confirmation: "basketball",
+             admin: true,
+             activated: true,
+             activated_at: Time.zone.now)

@@ -19,6 +19,7 @@ gem 'fog',                     '1.36.0'
 
 group :development, :test do
   gem 'byebug'
+  gem 'pg'
   gem 'web-console', '~> 2.0'
   gem 'spring'
 end

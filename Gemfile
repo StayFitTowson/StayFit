@@ -16,10 +16,15 @@ gem 'bootstrap-will_paginate'
 gem 'carrierwave',             '0.10.0'
 gem 'mini_magick',             '3.8.0'
 gem 'fog',                     '1.36.0'
+gem 'stripe'
+gem 'geocoder', :git => 'git://github.com/alexreisner/geocoder.git'
+gem 'omniauth-twitter'
+gem 'twitter'
 
 group :development, :test do
   gem 'byebug'
-  gem 'sqlite3'
+  gem 'pg',             '0.17.1'
+  gem 'dotenv-rails'
   gem 'web-console', '~> 2.0'
   gem 'spring'
 end

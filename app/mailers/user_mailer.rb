@@ -20,4 +20,10 @@ class UserMailer < ApplicationMailer
     @user = user
     mail to: user.email, subject: "Password reset"
   end
+
+   def admin_email(message)
+    @message = message
+    @user = User.find_by(admin: true)
+    mail(to: @user.email, subject: 'Welcome to My Awesome Site')
+  end
 end

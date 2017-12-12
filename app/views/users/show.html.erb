@@ -3,7 +3,12 @@
   <aside class="col-md-4">
     <section>
       <h1>
-        <%= gravatar_for @user %>
+        <%#= gravatar_for @user %>
+        <% if @user.image.present?%>
+          <img alt="<%= @user.name %>" class="gravatar" src="<%= @user.image %>" style="width: 60px; height: 60px;">
+        <%else%>
+          <%= gravatar_for @user %>
+        <%end%>
         <%= @user.name %>
       </h1>
     </section>

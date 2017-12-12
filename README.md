@@ -1,21 +1,44 @@
-The MIT License (MIT)
+# README
 
-Copyright (c) 2013 Joshua Kelly
+This documentation describes how to set up the application, its components, how
+to deploy it, and some internal information.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+## Set up
+This application needs ruby version 2.3.1. The version is set at the top of the
+Gemfile, in a way similar to Heroku. Most ruby version managers and Heroku
+recognize this syntax and will select the right version, or ask to install it.
+To find more about ruby, go [here](https://www.ruby-lang.org/es/)
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+This application is also based on the latest stable Rails version, which is, at
+this moment, 5.0.1. To find more about Rails, go [here](http://rubyonrails.org/)
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+First, you have to install all the dependencies. To do so, run:
+
+    gem install bundler
+    bundle install
+
+After that, you have to set up the database. This can be done by running:
+
+    rails db:setup
+
+After that, your application is ready to go. To run it, you have to execute:
+
+    rails s
+
+## Deployment instructions
+This application is Heroku-ready. To deploy it to heroku, you have to first set
+up an application on Heroku, and add Heroku as a remote with this:
+
+    heroku git:remote -a your-app-name
+
+After that, you only have to push it to Heroku:
+
+    git push heroku master
+
+And set up the database
+
+    heroku run bundle exec rake db:migrate
+
+And restart Heroku:
+
+	heroku restart    

@@ -10,6 +10,11 @@
       <section class="micropost_form">
         <%= render 'shared/micropost_form' %>
       </section>
+      <% if current_user.token && current_user.provider %>
+        <%= link_to "All Tweets", tweets_path, class: "btn btn-default"%>
+      <% else %>
+        <%= link_to "Connect with Twitter", "/auth/twitter", class: "btn btn-default"%>
+      <% end %>
     </aside>
     <div class="col-md-8">
       <h3>Micropost Feed</h3>
@@ -30,6 +35,5 @@
   <div class="made-in-ny">
     <img src="https://dl.dropboxusercontent.com/s/4ep0aw8ll9hlk0a/Made_in_NY_logo.png?dl=0" alt="" />
   </div>
-
 
 <% end %>

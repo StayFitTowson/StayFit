@@ -6,7 +6,8 @@ class UsersController < ApplicationController
 
 
   def index
-    @users = User.paginate(page: params[:page])
+    # @users = User.paginate(page: params[:page])
+    @users = User.where.not(id: current_user.id).paginate(page: params[:page])
   end
 
   def show
@@ -19,16 +20,24 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(user_params)    # Not the final implementation!
-    if @user.save
-      @user.send_activation_email
-      flash[:info] = "Please check your email to activate your account."
-      redirect_to root_url
-    else
-      render 'new'
+    userss = User.find_by(email: params[:user][:email]) 
+    if userss.present?
+      flash[:info] = "Email Already exist."
+      redirect_to :back
+    else 
+      @user = User.new(user_params)    # Not the final implementation!
+      if @user.save
+        @user.send_activation_email
+        flash[:info] = "Please check your email to activate your account."
+        redirect_to root_url
+      else
+        render 'new'
+      end
     end
   end
-
+  def add_user
+    @user = User.new
+  end  
   def edit
     @user = User.find(params[:id])
   end
@@ -62,16 +71,22 @@ class UsersController < ApplicationController
     @users = @user.followers.paginate(page: params[:page])
     render 'show_follow'
   end
+  def show_post
+    @microposts = Micropost.paginate(page: params[:page])
+  end  
 
   private
 
     def user_params
-      params.require(:user).permit(:name, :email, :password, :password_confirmation)
+      params.require(:user).permit(:name, :email, :password, :password_confirmation, :role, :status, :image, :address, :city, :state, :country, :latitude, :longitude, :suspended)
     end
 
     def correct_user
       @user = User.find(params[:id])
+      if current_user.admin == true
+      else  
       redirect_to(root_url) unless current_user?(@user)
+      end
     end
 
     def admin_user

@@ -1,27 +1,288 @@
-<% provide(:title, "Sign Up") %>
-<h1>Sign up</h1>
+<%# provide(:title, "Sign Up") %>
+<div id="form_main">
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <div class="alignmt">
+        <div class="medium" style="font-size: 1.5em;">Sign up</div>
+        <br/>
+        <form>
+         <!--  <label class="checkLabel">
+            Vendor Account
+            <input checked="checked" class="radio checked" data-href="#" id="radio-personal" name="accountType" type="radio" value="vendor"></input>
+            <span class="checkmark"></span>
+          </label>
+          <label class="checkLabel">
+            Coach Account
+            <input class="radio" data-href="#" id="radio-personal" name="accountType" type="radio" value="coach"></input>
+            <span class="checkmark"></span>
+          </label> -->
+          <label class="checkLabel">
+            Parents Account
+            <input checked="checked" class="radio checked" data-href="#" id="radio-business" name="accountType" type="radio" value="parent"></input>
+            <span class="checkmark"></span>
+          </label>
+          <label class="checkLabel">
+            Student Account
+            <input class="radio" data-href="#" id="radio-business" name="accountType" type="radio" value="student"></input>
+            <span class="checkmark"></span>
+          </label>
+          <br/>
+          <input class="btn span11" id="signupBut" name="submitBut" type="button" value="Continue"></input>
+        </form><br><br>
+      </div>
+    </div>
+    <div class="col-md-3"></div>
+  </div>
+</div>
+<!-- <div id="form_vendor" style="display: none;">
+  <h1>Sign up</h1>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <%= form_for(@user) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
 
-<div class="row">
-  <div class="col-md-6 col-md-offset-3">
-    <%= form_for(@user) do |f| %>
-    <%= render 'shared/error_messages', object: f.object %>
+        <%= f.hidden_field :role, :value => "", id: "people_role" %>
+        <%= f.label :name %>
+        <%= f.text_field :name, class: 'form-control' %>
 
-      <!-- Form control has special meaning with bootstrap -->
-      <%= f.label :name %>
-      <%= f.text_field :name, class: 'form-control' %>
+        <%= f.label :email %>
+        <%= f.text_field :email, class: 'form-control' %>
 
-      <%= f.label :email %>
-      <%= f.text_field :email, class: 'form-control' %>
+        <%= f.label :password %>
+        <%= f.password_field :password, class: 'form-control' %>
 
-      <%= f.label :password %>
-      <%= f.password_field :password, class: 'form-control' %>
+        <%= f.label :password_confirmation, "Confirmation" %>
+        <%= f.password_field :password_confirmation, class: 'form-control' %>
 
-      <%= f.label :password_confirmation, "Confirmation" %>
-      <%= f.password_field :password_confirmation, class: 'form-control' %>
+        <%= f.submit "Create my account", class: "btn btn=primary" %>
+      <% end %>
 
-      <%= f.submit "Create my account", class: "btn btn=primary" %>
-    <% end %>
+    </div>
 
   </div>
+</div> -->
+<!-- <div id="form_coach" style="display: none;">
+  <h1>Sign up</h1>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <%= form_for(@user) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
+        <%= f.hidden_field :role, :value => "", id: "user_role" %>
 
+        <%= f.label :name %>
+        <%= f.text_field :name, class: 'form-control' %>
+
+        <%= f.label :email %>
+        <%= f.text_field :email, class: 'form-control' %>
+
+        <%= f.label :password %>
+        <%= f.password_field :password, class: 'form-control' %>
+
+        <%= f.label :password_confirmation, "Confirmation" %>
+        <%= f.password_field :password_confirmation, class: 'form-control' %>
+
+        <%= f.submit "Create my account", class: "btn btn=primary" %>
+      <% end %>
+
+    </div>
+
+  </div>
+</div> -->
+<div id="form_parent" style="display: none;">
+  <h1>Sign up with Parents</h1>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <%= form_for(@user) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
+        <%= f.hidden_field :role, :value => "", id: "parent_role" %>
+        <%= f.hidden_field :suspended, :value => true %>
+        <!-- Form control has special meaning with bootstrap -->
+        <%= f.label :name %>
+        <%= f.text_field :name, class: 'form-control' %>
+
+        <%= f.label :email %>
+        <%= f.text_field :email, class: 'form-control' %>
+
+        <%= f.label :address %>
+        <%= f.text_field :address, class: 'form-control geocomplete_destination_to' %>
+
+        <%= f.label :city %>
+        <%= f.text_field :city, class: 'form-control' %>
+
+        <%= f.label :state %>
+        <%= f.text_field :state, class: 'form-control' %>
+
+        <%= f.label :country %>
+        <%= f.text_field :country, class: 'form-control' %>
+
+        <%= f.label :password %>
+        <%= f.password_field :password, class: 'form-control' %>
+
+        <%= f.label :password_confirmation, "Confirmation" %>
+        <%= f.password_field :password_confirmation, class: 'form-control' %>
+
+        <%= f.submit "Create my account", class: "btn btn=primary" %>
+      <% end %>
+
+    </div>
+
+  </div>
 </div>
+<div id="form_student" style="display: none;">
+  <h1>Sign up with Student</h1>
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <%= form_for(@user) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
+
+        <!-- Form control has special meaning with bootstrap -->
+        <%= f.hidden_field :role, :value => "", id: "student_role" %>
+        <%= f.hidden_field :suspended, :value => true %>
+        <%= f.label :name %>
+        <%= f.text_field :name, class: 'form-control' %>
+
+        <%= f.label :email %>
+        <%= f.text_field :email, class: 'form-control' %>
+
+        <%= f.label :address %>
+        <%= f.text_field :address, class: 'form-control geocomplete_destination_to' , id: "geocomplete_destination_from"%>
+
+        <%= f.label :city %>
+        <%= f.text_field :city, class: 'form-control' %>
+
+        <%= f.label :state %>
+        <%= f.text_field :state, class: 'form-control' %>
+
+        <%= f.label :country %>
+        <%= f.text_field :country, class: 'form-control' %>
+
+        <%= f.label :password %>
+        <%= f.password_field :password, class: 'form-control' %>
+
+        <%= f.label :password_confirmation, "Confirmation" %>
+        <%= f.password_field :password_confirmation, class: 'form-control' %>
+
+        <%= f.submit "Create my account", class: "btn btn=primary" %>
+      <% end %>
+
+    </div>
+
+  </div>
+</div>
+<script type="text/javascript">
+  setTimeout(function(){
+    $("#signupBut").click(function(){
+      var mode = $(this).val();
+      var val = $('input[name=accountType]:checked').val();
+      // if(val == "vendor" && mode == "Continue"){
+      //   $("#people_role").attr("value", "vendor");
+      //   $("#form_vendor").css("display", "block");
+      //   $("#form_coach").css("display", "none");
+      //   $("#form_student").css("display", "none");
+      //   $("#form_parent").css("display", "none");
+      //   $("#form_main").css("display", "none");
+      // }
+      // else if (val == "coach" && mode == "Continue"){
+      //   $("#user_role").attr("value", "coach");
+      //   $("#form_vendor").css("display", "none");
+      //   $("#form_coach").css("display", "block");
+      //   $("#form_student").css("display", "none");
+      //   $("#form_parent").css("display", "none");
+      //   $("#form_main").css("display", "none");
+      // }
+      if (val == "parent" && mode == "Continue"){
+        $("#parent_role").attr("value", "parent");
+        // $("#form_vendor").css("display", "none");
+        $("#form_parent").css("display", "block");
+        $("#form_student").css("display", "none");
+        // $("#form_coach").css("display", "none");
+        $("#form_main").css("display", "none");
+      }
+      else{
+        $("#student_role").attr("value", "student");
+        // $("#form_vendor").css("display", "none");
+        $("#form_student").css("display", "block");
+        $("#form_parent").css("display", "none");
+        // $("#form_coach").css("display", "none");
+        $("#form_main").css("display", "none"); 
+      }
+    });
+  },500);
+</script>
+<style type="text/css">
+  .span11 {
+    width: 50%;
+  } 
+  .checkLabel {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .checkLabel input {
+      position: absolute;
+      opacity: 0;
+  }
+  .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 25px;
+      width: 25px;
+      background-color: #eee;
+      border-radius: 50%;
+  }
+  .checkLabel:hover input ~ .checkmark {
+      background-color: #ccc;
+  }
+  .checkLabel input:checked ~ .checkmark {
+      background-color: #272727;
+  }
+  .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+  }
+  .checkLabel input:checked ~ .checkmark:after {
+      display: block;
+  }
+  .checkLabel .checkmark:after {
+    top: 9px;
+    left: 9px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+  }
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places&key=AIzaSyAvuPSxdugPS2FJQibo-i78wVZHWgmKemk&callback=initMap"></script> 
+<script>
+setTimeout(function(){
+
+  $(".geocomplete_destination_to").geocomplete();
+  .bind("geocode:result", function(event, result){
+    $.log("Result: " + result.formatted_address);
+  })
+  .bind("geocode:error", function(event, status){
+    $.log("ERROR: " + status);
+  })
+  .bind("geocode:multiple", function(event, results){
+    $.log("Multiple: " + results.length + " results found");
+  }); 
+},500);       
+</script>
+<script type="text/javascript">
+  function initMap() {
+    var uluru = {
+      lat: -25.363,
+      lng: 131.044
+    };
+  }
+</script>

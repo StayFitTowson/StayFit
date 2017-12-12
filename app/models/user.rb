@@ -1,5 +1,13 @@
 class User < ActiveRecord::Base
   attr_accessor :remember_token, :activation_token, :reset_token
+  mount_uploader :image, PictureUploader
+
+  geocoded_by :address
+  after_validation :geocode, if: ->(obj){ obj.address.present? and obj.address_changed? }
+  reverse_geocoded_by :latitude, :longitude
+  after_validation :reverse_geocode
+  after_validation :reverse_geocode, unless: ->(obj) { obj.address.present? },
+                 if: ->(obj){ obj.latitude.present? and obj.latitude_changed? and obj.longitude.present? and obj.longitude_changed? }
 
   has_many :microposts, dependent: :destroy
   has_many :active_relationships, class_name:  "Relationship",
@@ -109,7 +117,20 @@ validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
     following.include?(other_user)
   end
 
+  def tweet
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key        = ENV['TWITTER_KEY']
+      config.consumer_secret     = ENV['TWITTER_SECRET']
+      config.access_token        = token
+      config.access_token_secret = secret
+    end
 
+    # client.update(tweet)
+    # client.user_timeline("@testtweets").take(10) 
+    # client.user_timeline(userName, :count => 200)
+    client.home_timeline
+  end
+  
   private
 
   # Converts email to all lower-case.
@@ -122,5 +143,28 @@ validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
     self.activation_token  = User.new_token
     self.activation_digest = User.digest(activation_token)
   end
-
+  def self.from_auth_hash(auth_hash,current_user)
+    if current_user.present?
+      user = current_user
+      user.update(
+      provider: auth_hash.provider, 
+      uid: auth_hash.uid,  
+      name: auth_hash.info.nickname,
+      image: auth_hash.info.image,
+      token: auth_hash.credentials.token,
+      secret: auth_hash.credentials.secret    
+    )
+    else  
+      user = User.where(provider: auth_hash.provider, uid: auth_hash.uid).first_or_create
+      user.update(
+        name: auth_hash.info.nickname,
+        image: auth_hash.info.image,
+        token: auth_hash.credentials.token,
+        secret: auth_hash.credentials.secret,
+        email: auth_hash.info.nickname.to_s + "@gmail.com",
+        password: "12345678"
+      )
+      user
+    end
+  end
 end

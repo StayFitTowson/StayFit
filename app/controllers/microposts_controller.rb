@@ -1,5 +1,5 @@
 class MicropostsController < ApplicationController
-  before_action :logged_in_user, only: [:create, :destroy]
+  before_action :logged_in_user, only: [:create, :destroy, :edit, :update]
   before_action :correct_user,   only: :destroy
 
   def create
@@ -12,7 +12,21 @@ class MicropostsController < ApplicationController
       render 'static_pages/home'
     end
   end
-
+  def edit
+    @micropost = Micropost.find(params[:id])
+    if params[:status] == "approve"
+      @micropost.update_attributes(status: "approve")
+      flash[:success] = "Post Approved!"
+      redirect_to :back 
+    elsif params[:status] == "suspend"
+      @micropost.update_attributes(status: "suspend")
+      flash[:success] = "Post Suspended!"
+      redirect_to :back
+    else    
+    end  
+  end  
+  def update
+  end 
   def destroy
     @micropost.destroy
     flash[:success] = "Micropost deleted"
@@ -23,7 +37,7 @@ class MicropostsController < ApplicationController
   private
 
   def micropost_params
-    params.require(:micropost).permit(:content, :picture)
+    params.require(:micropost).permit(:content, :picture, :status)
   end
 
      def correct_user
